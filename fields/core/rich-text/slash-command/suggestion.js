@@ -67,8 +67,8 @@ export default function suggestion(openMediaDialog) {
           command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
         },
                 {
-  title: 'YouTube',
-  icon: <Youtube className="w-full h-full" />,
+  title: 'Youtube',
+  icon: <SquarePlay className="w-full h-full" />,
   command: ({ editor, range }) => {
     const url = prompt('Enter YouTube URL:'); // A simple prompt for the slash command
     if (url) {
