@@ -56,6 +56,21 @@ export default function suggestion(openMediaDialog) {
           title: "Table",
           command: ({ editor, range }) => editor.chain().focus().deleteRange(range).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
         },
+                {
+                    title: 'Youtube',
+                    icon: <SquarePlay className="w-full h-full" />,
+                    command: ({ editor, range }) => {
+                        const url = prompt('Enter YouTube URL:'); // A simple prompt for the slash command
+                        if (url) {
+                            editor
+                                .chain()
+                                .focus()
+                                .deleteRange(range)
+                                .setYoutubeVideo({ src: url })
+                                .run();
+                        }
+                    },
+                },
         {
           icon: <Quote className="h-4 w-4"/>,
           title: "Quote",
@@ -66,21 +81,6 @@ export default function suggestion(openMediaDialog) {
           title: "Code",
           command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
         },
-                {
-  title: 'Youtube',
-  icon: <SquarePlay className="w-full h-full" />,
-  command: ({ editor, range }) => {
-    const url = prompt('Enter YouTube URL:'); // A simple prompt for the slash command
-    if (url) {
-      editor
-        .chain()
-        .focus()
-        .deleteRange(range)
-        .setYoutubeVideo({ src: url })
-        .run();
-    }
-  },
-},
       ];
       
       if (openMediaDialog) suggestionsArray.splice(6, 0, {
