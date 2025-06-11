@@ -12,6 +12,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
+import Youtube from "@tiptap/extension-youtube";
 import { useConfig } from "@/contexts/config-context";
 import { useRepo } from "@/contexts/repo-context";
 import { getRawUrl, relativeToRawUrls } from "@/lib/githubImage";
@@ -56,6 +57,7 @@ import {
   Strikethrough,
   Table as TableIcon,
   Trash2,
+    SquarePlay as YoutubeIcon,
   Underline as UnderlineIcon
 } from "lucide-react";
 import { toast } from "sonner";
@@ -108,6 +110,7 @@ const EditComponent = forwardRef((props: any, ref) => {
 
   const [linkUrl, setLinkUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
+    const [youtubeUrl, setYoutubeUrl] = useState("");
 
   const openMediaDialog = mediaConfig?.input
     ? () => { if (mediaDialogRef?.current) mediaDialogRef.current.open() }
@@ -164,7 +167,12 @@ const EditComponent = forwardRef((props: any, ref) => {
       TableHeader,
       TableCell,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Underline
+      Underline,
+            Youtube.configure({
+        nocookie: true, // Recommended for privacy
+        width: 640,
+        height: 360,
+      }),
     ],
     content: "<p></p>",
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -203,6 +211,15 @@ const EditComponent = forwardRef((props: any, ref) => {
       editor.chain().focus().insertContent(content.join('\n')).run();
     }
   }, [config, editor, isPrivate, mediaConfig?.name]);
+
+  const addYoutubeVideo = useCallback(() => {
+    if (youtubeUrl && editor) {
+      editor.commands.setYoutubeVideo({
+        src: youtubeUrl,
+      });
+      setYoutubeUrl(""); // Clear the input after adding
+    }
+  }, [youtubeUrl, editor]);
 
   const getBlockIcon = (editor: any) => {
     if (editor.isActive("heading", { level: 1 })) return <Heading1 className="h-4 w-4" />;
@@ -319,6 +336,43 @@ const EditComponent = forwardRef((props: any, ref) => {
                 </div>
               </PopoverContent>
             </Popover>
+                        
+<Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xxs"
+                  className="shrink-0"
+                >
+                  <YoutubeIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-1 w-80">
+                <div className="flex gap-x-1 items-center">
+                  <Input
+                    className="h-8 flex-1"
+                    placeholder="Enter YouTube URL"
+                    value={youtubeUrl}
+                    onChange={e => setYoutubeUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addYoutubeVideo();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xxs"
+                    className="shrink-0"
+                    onClick={addYoutubeVideo}
+                  >Embed</Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
             {(editor.isActive("paragraph") || editor.isActive("heading")) &&
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
